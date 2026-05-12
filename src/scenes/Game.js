@@ -5,6 +5,8 @@ export class Game extends Phaser.Scene {
     }
 
     create() {
+        this.player = new Player(this, 400, 300);
+
         this.lastSide = null;
 
         this.bg = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x0000ff)
