@@ -32,6 +32,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             frameRate: 10,
             repeat: -1
         });
+
+        this.anims.create({
+            key: 'lookleft',
+            frames: [ { key: 'dude', frame: 0 } ],
+            frameRate: 1
+        });
+
+        this.anims.create({
+            key: 'lookright',
+            frames: [ { key: 'dude', frame: 7 } ],
+            frameRate: 1
+        });
     }
 
     moveLeft ()

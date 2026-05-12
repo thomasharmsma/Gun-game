@@ -1,3 +1,4 @@
+import { Player } from '../objects/Player.js';
 export class Game extends Phaser.Scene {
     constructor() {
         super('Game');
@@ -17,10 +18,14 @@ export class Game extends Phaser.Scene {
                 console.log(`Mouse moved to the ${currentSide} side`);
                 this.lastSide = currentSide;
 
-                if (currentSide === "left") {
-                    this.bg.setFillStyle(0x0000ff);
-                } else {
-                    this.bg.setFillStyle(0xff0000);
+                if (currentSide === "left")
+                {
+                    this.anims.play('lookleft', true);
+                } 
+                
+                else 
+                {
+                    this.anims.play('lookright', true);
                 }
             }
         });
