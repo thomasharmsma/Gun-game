@@ -25,7 +25,8 @@ export class Preloader extends Phaser.Scene {
     preload() {
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
-        this.load.spritesheet('dude', 'dude.png', { frameWidth: 32, frameHeight: 48 });
+        this.load.spritesheet('Horror-Walking-Sprites', 'Horror-Walking-Sprites.png', { frameWidth: 183, frameHeight: 175 });
+        this.load.spritesheet('Horror-Idle-Sprites', 'Horror-Idle-Sprites.png', { frameWidth: 183, frameHeight: 173 });
 
     }
 

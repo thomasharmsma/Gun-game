@@ -28,6 +28,8 @@ export class Game extends Phaser.Scene {
                 {
                     this.player.anims.play('lookright', true);
                 }
+
+                this.player.flipX = (currentSide === 'left');
             }
 
         });

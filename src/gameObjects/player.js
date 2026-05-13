@@ -2,7 +2,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 {
     constructor(scene, x, y)
     {
-        super(scene, x, y, 'dude');
+        super(scene, x, y, 'Horror-Idle-Sprites', 0);
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -19,34 +19,47 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     {
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('Horror-Walking-Sprites', { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
         });
 
         this.anims.create({
             key: 'turn',
-            frames: [ { key: 'dude', frame: 4 } ],
+            frames: [ { key: 'Horror-Walking-Sprites', frame: 4 } ],
             frameRate: 1
         });
 
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+            frames: this.anims.generateFrameNumbers('Horror-Walking-Sprites', { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
         });
 
         this.anims.create({
             key: 'lookleft',
-            frames: [ { key: 'dude', frame: 0 } ],
+            frames: [ { key: 'Horror-Idle-Sprites', frame: 0 } ],
             frameRate: 1
         });
 
         this.anims.create({
             key: 'lookright',
-            frames: [ { key: 'dude', frame: 7 } ],
+            frames: [ { key: 'Horror-Idle-Sprites', frame: 4 } ],
             frameRate: 1
+        });
+
+        this.anims.create({
+            key: 'idle',
+            frames: [
+                { key: 'Horror-Idle-Sprites', frame: 0 },
+                { key: 'Horror-Idle-Sprites', frame: 1 },
+                { key: 'Horror-Idle-Sprites', frame: 2 },
+                { key: 'Horror-Idle-Sprites', frame: 3 },
+                { key: 'Horror-Idle-Sprites', frame: 4 }
+            ],
+            frameRate: 10,
+            repeat: -1
         });
     }
 
@@ -75,18 +88,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         }
 
         if (!isMoving) {
-            this.anims.play('turn', true);
+            this.anims.play('idle', true);
         } else {
             const side = this.currentSide || 'right';
             this.anims.play(side === 'left' ? 'left' : 'right', true);
         }
+
+        this.flipX = (this.currentSide === 'left');
     }
 
 
 
     idle ()
     {
-
-        this.anims.play('turn', true);
+        this.anims.play('idle', true);
     }
 }
