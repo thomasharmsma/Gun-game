@@ -8,8 +8,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         scene.physics.add.existing(this);
 
         this.setCollideWorldBounds(true);
+        this.currentSide = 'right';
+        this.playerVelocity = 150;
         this.initAnimations();
     }
+
+
 
     initAnimations ()
     {
@@ -46,31 +50,43 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         });
     }
 
-    moveLeft ()
+    update(keys)
     {
-        this.setVelocityX(-200);
-        
-        this.anims.play('left', true);
+        let isMoving = false;
+
+        if (keys.A.isDown) {
+            this.setVelocityX(-this.playerVelocity);
+            isMoving = true;
+        } else if (keys.D.isDown) {
+            this.setVelocityX(this.playerVelocity);
+            isMoving = true;
+        } else {
+            this.setVelocityX(0);
+        }
+
+        if (keys.W.isDown) {
+            this.setVelocityY(-this.playerVelocity);
+            isMoving = true;
+        } else if (keys.S.isDown) {
+            this.setVelocityY(this.playerVelocity);
+            isMoving = true;
+        } else {
+            this.setVelocityY(0);
+        }
+
+        if (!isMoving) {
+            this.anims.play('turn', true);
+        } else {
+            const side = this.currentSide || 'right';
+            this.anims.play(side === 'left' ? 'left' : 'right', true);
+        }
     }
 
-    moveRight ()
-    {
-        this.setVelocityX(200);
-        
-        this.anims.play('right', true);
-    }
+
 
     idle ()
     {
-        this.setVelocityX(0)
 
         this.anims.play('turn', true);
-    }
-
-    jump ()
-    {
-        if (this.body.blocked.down) {
-            this.setVelocityY(-500);
-        }
     }
 }

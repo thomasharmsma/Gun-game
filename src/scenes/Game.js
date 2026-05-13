@@ -6,13 +6,14 @@ export class Game extends Phaser.Scene {
 
     create() {
         this.player = new Player(this, this.scale.width / 2, this.scale.height / 2);
-
+        this.player.currentSide = 'right';
         this.lastSide = null;
-
 
         this.input.on('pointermove', (pointer) => {
             const screenWidth = this.scale.width;
             const currentSide = pointer.x < screenWidth / 2 ? "left" : "right";
+
+            this.player.currentSide = currentSide;
 
             if (currentSide !== this.lastSide) {
                 console.log(`Mouse moved to the ${currentSide} side`);
@@ -28,11 +29,14 @@ export class Game extends Phaser.Scene {
                     this.player.anims.play('lookright', true);
                 }
             }
+
         });
+
+        this.keys = this.input.keyboard.addKeys('W,A,S,D');
     }
 
     update() 
     {
-        
+        this.player.update(this.keys);
     }
 }
