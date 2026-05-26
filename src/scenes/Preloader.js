@@ -27,6 +27,7 @@ export class Preloader extends Phaser.Scene {
         this.load.setPath('assets');
         this.load.spritesheet('Horror-Walking-Sprites', 'Horror-Walking-Sprites.png', { frameWidth: 183, frameHeight: 175 });
         this.load.spritesheet('Horror-Idle-Sprites', 'Horror-Idle-Sprites.png', { frameWidth: 183, frameHeight: 173 });
+        this.load.image('revolver', 'revolver.png');
 
     }
 

@@ -1,4 +1,5 @@
 import { Player } from '../gameObjects/Player.js';
+import { Gun } from '../gameObjects/guns.js';
 export class Game extends Phaser.Scene {
     constructor() {
         super('Game');
@@ -8,6 +9,9 @@ export class Game extends Phaser.Scene {
         this.player = new Player(this, this.scale.width / 2, this.scale.height / 2);
         this.player.currentSide = 'right';
         this.lastSide = null;
+
+        this.gun = new Gun(this, this.player.x, this.player.y);
+        this.gun.scale = 0.5;
 
         this.input.on('pointermove', (pointer) => {
             const screenWidth = this.scale.width;
