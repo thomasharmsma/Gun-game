@@ -43,5 +43,23 @@ export class Game extends Phaser.Scene {
     update() 
     {
         this.player.update(this.keys);
+
+        const pointer = this.input.activePointer;
+
+        const angle = Phaser.Math.Angle.Between(
+            this.player.x, 
+            this.player.y, 
+            pointer.x, 
+            pointer.y
+        );
+
+        const orbitDistance = 40;
+
+        this.gun.x = this.player.x + Math.cos(angle) * orbitDistance;
+        this.gun.y = this.player.y + Math.sin(angle) * orbitDistance;
+
+        this.gun.rotation = angle;
+
+        this.gun.flipY = (this.player.currentSide === 'left');
     }
 }
