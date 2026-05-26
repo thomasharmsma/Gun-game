@@ -10,8 +10,7 @@ export class Game extends Phaser.Scene {
         this.lastSide = null;
 
         this.input.on('pointermove', (pointer) => {
-            const screenWidth = this.scale.width;
-            const currentSide = pointer.x < screenWidth / 2 ? "left" : "right";
+            const currentSide = pointer.x < this.player.x ? "left" : "right";
 
             this.player.currentSide = currentSide;
 
