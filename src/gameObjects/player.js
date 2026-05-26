@@ -9,7 +9,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
         this.setCollideWorldBounds(true);
         this.currentSide = 'right';
-        this.playerVelocity = 150;
+        this.playerVelocity = 100;
         this.initAnimations();
     }
 
@@ -68,20 +68,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         let isMoving = false;
 
         if (keys.A.isDown) {
-            this.setVelocityX(-this.playerVelocity);
+                this.setVelocityX(-this.playerVelocity);
             isMoving = true;
         } else if (keys.D.isDown) {
-            this.setVelocityX(this.playerVelocity);
+                this.setVelocityX(this.playerVelocity);
             isMoving = true;
         } else {
-            this.setVelocityX(0);
+                this.setVelocityX(0);
         }
 
         if (keys.W.isDown) {
-            this.setVelocityY(-this.playerVelocity);
+                this.setVelocityY(-this.playerVelocity);
             isMoving = true;
         } else if (keys.S.isDown) {
-            this.setVelocityY(this.playerVelocity);
+                this.setVelocityY(this.playerVelocity);
             isMoving = true;
         } else {
             this.setVelocityY(0);
