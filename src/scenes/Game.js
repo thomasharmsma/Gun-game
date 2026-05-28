@@ -1,5 +1,5 @@
 import { Player } from '../gameObjects/Player.js';
-import { Gun } from '../gameObjects/guns.js';
+import { Gun, Bullet } from '../gameObjects/guns.js';
 document.body.style.cursor = 'none';
 export class Game extends Phaser.Scene {
     constructor() {
@@ -17,7 +17,13 @@ export class Game extends Phaser.Scene {
 
         this.gun = new Gun(this, this.player.x, this.player.y);
         this.gun.scale = 0.5;
-        this.crosshair.scale = 0.53
+        this.crosshair.scale = 0.53;
+
+        this.bullets = this.physics.add.group({
+            classType: Bullet,
+            maxSize: 20,
+            runChildUpdate: true
+        });
 
         this.input.on('pointermove', (pointer) => {
             const currentSide = pointer.worldX < this.player.x ? "left" : "right";
@@ -41,6 +47,19 @@ export class Game extends Phaser.Scene {
                 this.player.flipX = (currentSide === 'left');
             }
 
+        });
+
+        this.input.on('pointerdown', (pointer) => {
+            if (!pointer.leftButtonDown()) {
+                return;
+            }
+
+            const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+            const bullet = this.bullets.get();
+
+            if (bullet) {
+                bullet.fire(this.gun.x, this.gun.y, worldPoint.x, worldPoint.y);
+            }
         });
 
         this.keys = this.input.keyboard.addKeys('W,A,S,D');
