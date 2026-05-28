@@ -24,7 +24,7 @@ export class Game extends Phaser.Scene {
         this.crosshair.scale = 0.53
 
         this.input.on('pointermove', (pointer) => {
-            const currentSide = pointer.x < this.player.x ? "left" : "right";
+            const currentSide = pointer.worldX < this.player.x ? "left" : "right";
 
             this.player.currentSide = currentSide;
 
@@ -55,18 +55,19 @@ export class Game extends Phaser.Scene {
         this.player.update(this.keys);
         
         const pointer = this.input.activePointer;
-        const aimAngle = Phaser.Math.Angle.Between(this.player.x, this.player.y, pointer.worldX, pointer.worldY);
+        this.crosshair.x = pointer.x;
+        this.crosshair.y = pointer.y;
+
+        const crosshairWorld = this.cameras.main.getWorldPoint(this.crosshair.x, this.crosshair.y);
+        const aimAngle = Phaser.Math.Angle.Between(this.player.x, this.player.y, crosshairWorld.x, crosshairWorld.y);
         const orbitRadius = 45;
         const targetX = this.player.x + Math.cos(aimAngle) * orbitRadius;
         const targetY = this.player.y + 8 + Math.sin(aimAngle) * orbitRadius;
-        const isMouseLeft = pointer.worldX < this.player.x;
+        const isMouseLeft = crosshairWorld.x < this.player.x;
 
         this.gun.setFlipY(isMouseLeft);
         this.gun.setRotation(aimAngle);
         this.gun.x = Phaser.Math.Linear(this.gun.x, targetX, 0.2);
         this.gun.y = Phaser.Math.Linear(this.gun.y, targetY, 0.2);
-
-        this.crosshair.x = Phaser.Math.Linear(this.crosshair.x, pointer.x, 0.25);
-        this.crosshair.y = Phaser.Math.Linear(this.crosshair.y, pointer.y, 0.25);
     }
 }
