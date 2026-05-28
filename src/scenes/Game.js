@@ -1,5 +1,6 @@
 import { Player } from '../gameObjects/Player.js';
 import { Gun } from '../gameObjects/guns.js';
+document.body.style.cursor = 'none';
 export class Game extends Phaser.Scene {
     constructor() {
         super('Game');
@@ -13,12 +14,16 @@ export class Game extends Phaser.Scene {
         this.player = new Player(this, this.scale.width / 2, this.scale.height / 2);
         this.player.currentSide = 'right';
         this.lastSide = null;
+        this.crosshair = this.add.image(0, 0, 'crosshair').setDepth(1);
 
         this.gun = new Gun(this, this.player.x, this.player.y);
         this.gun.scale = 0.5;
+        this.crosshair.scale = 0.53
 
         this.input.on('pointermove', (pointer) => {
             const currentSide = pointer.x < this.player.x ? "left" : "right";
+
+            this.crosshair.setPosition(pointer.worldX, pointer.worldY);
 
             this.player.currentSide = currentSide;
 
@@ -59,5 +64,9 @@ export class Game extends Phaser.Scene {
         this.gun.setRotation(aimAngle);
         this.gun.x = Phaser.Math.Linear(this.gun.x, targetX, 0.2);
         this.gun.y = Phaser.Math.Linear(this.gun.y, targetY, 0.2);
+
+
+
+
     }
 }
