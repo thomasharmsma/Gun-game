@@ -9,7 +9,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
         this.setCollideWorldBounds(true);
         this.currentSide = 'right';
-        this.playerVelocity = 100;
+        this.playerVelocity = 200;
         this.initAnimations();
     }
 

@@ -43,19 +43,17 @@ export class Game extends Phaser.Scene {
     update() 
     {
         this.player.update(this.keys);
-
-        const orbitDistance = 40;
+        
         const pointer = this.input.activePointer;
-        const angle = Phaser.Math.Angle.Between(
-            this.player.x, 
-            this.player.y, 
-            pointer.x, 
-            pointer.y
-        );
+        const aimAngle = Phaser.Math.Angle.Between(this.player.x, this.player.y, pointer.worldX, pointer.worldY);
+        const orbitRadius = 45;
+        const targetX = this.player.x + Math.cos(aimAngle) * orbitRadius;
+        const targetY = this.player.y + 8 + Math.sin(aimAngle) * orbitRadius;
+        const isMouseLeft = pointer.worldX < this.player.x;
 
-        this.gun.x = this.player.x + Math.cos(angle) * orbitDistance;
-        this.gun.y = this.player.y + Math.sin(angle) * orbitDistance;
-        this.gun.rotation = angle;
-        this.gun.flipY = (this.player.currentSide === 'left');
+        this.gun.setFlipY(isMouseLeft);
+        this.gun.setRotation(aimAngle);
+        this.gun.x = Phaser.Math.Linear(this.gun.x, targetX, 0.2);
+        this.gun.y = Phaser.Math.Linear(this.gun.y, targetY, 0.2);
     }
 }
