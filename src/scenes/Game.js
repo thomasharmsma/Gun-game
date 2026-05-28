@@ -7,10 +7,6 @@ export class Game extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(0, 0, 'background')
-            .setOrigin(0)
-            .setDisplaySize(this.scale.width, this.scale.height);
-
         this.player = new Player(this, this.scale.width / 2, this.scale.height / 2);
         this.cameras.main.startFollow(this.player);
         this.player.currentSide = 'right';
@@ -66,8 +62,7 @@ export class Game extends Phaser.Scene {
         const isMouseLeft = crosshairWorld.x < this.player.x;
 
         this.gun.setFlipY(isMouseLeft);
-        this.gun.setRotation(aimAngle);
-        this.gun.x = Phaser.Math.Linear(this.gun.x, targetX, 0.2);
-        this.gun.y = Phaser.Math.Linear(this.gun.y, targetY, 0.2);
+        this.gun.setPosition(targetX, targetY);
+        this.gun.rotation = Phaser.Math.Angle.RotateTo(this.gun.rotation, aimAngle, 0.35);
     }
 }
