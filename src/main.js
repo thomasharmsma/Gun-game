@@ -1,14 +1,15 @@
 import { Boot } from './scenes/Boot.js';
+import { Preloader } from './scenes/Preloader.js';
+import { Start } from './scenes/Start.js';
 import { Game } from './scenes/Game.js';
 import { GameOver } from './scenes/GameOver.js';
-import { Preloader } from './scenes/Preloader.js';
 
 const config = {
     type: Phaser.AUTO,
     width: 1024,
     height: 768,
     parent: 'game-container',
-    backgroundColor: '#028af8',
+    backgroundColor: '#000000',
     physics: {
         default: 'arcade',
         arcade: {
@@ -23,6 +24,7 @@ const config = {
     scene: [
         Boot,
         Preloader,
+        Start,
         Game,
         GameOver
     ]
