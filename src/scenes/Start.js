@@ -1,4 +1,6 @@
+document.body.style.cursor = 'none';
 export class Start extends Phaser.Scene {
+   
     constructor() {
         super('Start');
     }
@@ -10,7 +12,7 @@ export class Start extends Phaser.Scene {
         const centerY = this.scale.height / 2;
 
         const playButton = this.add.image(centerX, centerY, 'play')
-            .setInteractive({ useHandCursor: true })
+            .setInteractive()
             .setScale(1)
             .setDepth(1);
 
