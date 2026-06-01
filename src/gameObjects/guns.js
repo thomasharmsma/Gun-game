@@ -19,7 +19,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.setActive(false);
         this.setVisible(false);
         this.body.setAllowGravity(false);
-        this.speed = 1000;
+        this.speed = 1800;
         this.maxLifespan = 2000;
         this.firedAt = 0;
     }
@@ -32,7 +32,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.setScale(0.5);
 
         const baseAngle = Phaser.Math.Angle.Between(x, y, targetX, targetY);
-        const spreadDegrees = 5;
+        const spreadDegrees = 4;
         const spreadRad = Phaser.Math.DegToRad(Phaser.Math.Between(-spreadDegrees, spreadDegrees));
         const angle = baseAngle + spreadRad;
         this.setRotation(angle);
