@@ -34,6 +34,10 @@ export class Preloader extends Phaser.Scene {
         this.load.image('wall1', 'Wall1.png');
         this.load.image('wall2', 'Wall2.png');
         this.load.image('desertfloor', 'desertfloor.png');
+        this.load.image('pause', 'Paused.png');
+        this.load.image('retryButton', 'Retry.png');
+        this.load.image('quitButton', 'Quit.png');
+        this.load.image('continueButton', 'Continue.png');
 
     }
 

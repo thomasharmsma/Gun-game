@@ -27,41 +27,37 @@ export class Game extends Phaser.Scene {
         this.nextDirection = 'right';
         this.cameras.main.setBackgroundColor(0x00ff00);
 
-        // Initialize snake
-        this.snake = [];
-        const startX = 0;
-        const startY = 0;
+        const spawnX = this.scale.width / 2;
+        const spawnY = this.scale.height / 2;
 
-        // Create initial snake body (1 segment)
+        this.snake = [];
         for (let i = 0; i < 1; i++) {
             const segment = this.add.image(
-                (startX + i) * this.gridSize,
-                startY * this.gridSize,
+                spawnX + i * this.gridSize,
+                spawnY,
                 'desertfloor'
-            );
+            ).setDepth(0);
             this.snake.push(segment);
         }
 
         this.snake2 = [];
-        const startX2 = 0;
-        const startY2 = 0;
         for (let i = 0; i < 1; i++) {
             const segment2 = this.add.image(
-                (startX + i) * this.gridSize,
-                startY * this.gridSize,
+                spawnX + i * this.gridSize,
+                spawnY,
                 'desertfloor'
-            );
+            ).setDepth(0);
             this.snake2.push(segment2);
         }
 
-        this.time.addEvent({
+        this.snakeTimer = this.time.addEvent({
             delay: this.snakeSpeed,
             callback: this.chooseRandomDirection,
             callbackScope: this,
             loop: true
         });
 
-        this.time.addEvent({
+        this.snakeTimer2 = this.time.addEvent({
             delay: this.snakeSpeed,
             callback: this.chooseRandomDirection2,
             callbackScope: this,
@@ -82,15 +78,17 @@ export class Game extends Phaser.Scene {
         }
 
 
-        this.player = new Player(this, this.scale.width / 2, this.scale.height / 2);
+        this.player = new Player(this, spawnX, spawnY);
+        this.player.setDepth(2);
         this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
         this.player.currentSide = 'right';
         this.lastSide = null;
         this.crosshair = this.add.image(this.scale.width / 2, this.scale.height / 2, 'crosshair')
-            .setDepth(1)
+            .setDepth(11)
             .setScrollFactor(0);
 
         this.gun = new Gun(this, this.player.x, this.player.y);
+        this.gun.setDepth(3);
         this.gun.scale = 0.5;
         this.crosshair.scale = 0.53;
 
@@ -104,6 +102,10 @@ export class Game extends Phaser.Scene {
         this.lastShotAt = 0;
 
         this.input.on('pointermove', (pointer) => {
+            if (this.gamePaused) {
+                return;
+            }
+
             const currentSide = pointer.worldX < this.player.x ? "left" : "right";
 
             this.player.currentSide = currentSide;
@@ -127,6 +129,10 @@ export class Game extends Phaser.Scene {
         });
 
         this.input.on('pointerdown', (pointer) => {
+            if (this.gamePaused) {
+                return;
+            }
+
             if (!pointer.leftButtonDown()) {
                 return;
             }
@@ -146,11 +152,108 @@ export class Game extends Phaser.Scene {
         });
 
         this.keys = this.input.keyboard.addKeys('W,A,S,D');
+        this.gamePaused = false;
+
+        this.input.keyboard.on('keydown-ESC', () => {
+            this.togglePause(!this.gamePaused);
+        });
+
+        this.createPauseMenu();
+    }
+
+    togglePause(paused) {
+        this.gamePaused = paused;
+        this.setPauseMenuVisible(paused);
+
+        if (this.physics && this.physics.world) {
+            if (paused) {
+                this.physics.world.pause();
+                this.player.setVelocity(0, 0);
+            } else {
+                this.physics.world.resume();
+            }
+        }
+
+        if (this.snakeTimer) {
+            this.snakeTimer.paused = paused;
+        }
+
+        if (this.snakeTimer2) {
+            this.snakeTimer2.paused = paused;
+        }
+    }
+
+    setPauseMenuVisible(visible) {
+        if (!this.pauseMenuObjects) {
+            return;
+        }
+
+        this.pauseMenuObjects.forEach(obj => obj.setVisible(visible));
+    }
+
+    createPauseMenu() {
+        const centerX = this.scale.width / 2;
+        const screenHeight = this.scale.height;
+        const screenWidth = this.scale.width;
+
+        const overlay = this.add.rectangle(centerX, screenHeight / 2, screenWidth, screenHeight, 0x000000, 0.35)
+            .setScrollFactor(0)
+            .setDepth(9)
+            .setVisible(false);
+
+        const title = this.add.image(centerX, 40, 'pause')
+            .setScale(0.6)
+            .setScrollFactor(0)
+            .setDepth(10)
+            .setOrigin(0.5, 0)
+            .setVisible(false);
+
+        const quit = this.add.image(20, screenHeight - 250, 'quitButton')
+            .setScale(0.5)
+            .setOrigin(0, 0)
+            .setScrollFactor(0)
+            .setDepth(10)
+            .setInteractive({ useHandCursor: true })
+            .setVisible(false);
+
+        const retry = this.add.image(20, screenHeight - 150, 'retryButton')
+            .setScale(0.5)
+            .setOrigin(0, 0)
+            .setScrollFactor(0)
+            .setDepth(10)
+            .setInteractive({ useHandCursor: true })
+            .setVisible(false);
+
+        const cont = this.add.image(screenWidth - 20, screenHeight - 150, 'continueButton')
+            .setScale(0.5)
+            .setOrigin(1, 0)
+            .setScrollFactor(0)
+            .setDepth(10)
+            .setInteractive({ useHandCursor: true })
+            .setVisible(false);
+
+        quit.on('pointerdown', () => {
+            this.scene.start('Start');
+        });
+
+        retry.on('pointerdown', () => {
+            this.scene.restart();
+        });
+
+        cont.on('pointerdown', () => {
+            this.togglePause(false);
+        });
+
+        this.pauseMenuObjects = [overlay, title, quit, retry, cont];
     }
 
     update(time) 
     {
-        if (this.isGameOver) return;
+        const pointer = this.input.activePointer;
+        this.crosshair.x = pointer.x;
+        this.crosshair.y = pointer.y;
+
+        if (this.isGameOver || this.gamePaused) return;
 
         const totalTilesCovered = this.snake.length + this.snake2.length;
         if (totalTilesCovered >= 200) {
@@ -165,7 +268,6 @@ export class Game extends Phaser.Scene {
         }
 
         const cam = this.cameras.main;
-        const pointer = this.input.activePointer;
 
         const offsetX = Phaser.Math.Clamp((this.scale.width / 2 - pointer.x) * 0.2, -120, 120);
         const offsetY = Phaser.Math.Clamp((this.scale.height / 2 - pointer.y) * 0.2, -80, 80);
@@ -173,9 +275,6 @@ export class Game extends Phaser.Scene {
         cam.followOffset.set(offsetX, offsetY);
 
         this.player.update(this.keys);
-        
-        this.crosshair.x = pointer.x;
-        this.crosshair.y = pointer.y;
 
         const crosshairWorld = this.cameras.main.getWorldPoint(this.crosshair.x, this.crosshair.y);
         const aimAngle = Phaser.Math.Angle.Between(this.player.x, this.player.y, crosshairWorld.x, crosshairWorld.y);
@@ -244,7 +343,7 @@ export class Game extends Phaser.Scene {
         }
 
         // Move snake
-        const newHead = this.add.image(newX, newY, 'desertfloor');
+        const newHead = this.add.image(newX, newY, 'desertfloor').setDepth(0);
         this.snake.unshift(newHead);
     }
 
@@ -270,7 +369,7 @@ export class Game extends Phaser.Scene {
                 break;
         }
 
-        const newHead = this.add.image(newX, newY, 'desertfloor');
+        const newHead = this.add.image(newX, newY, 'desertfloor').setDepth(0);
         this.snake2.unshift(newHead);
     }
 }
