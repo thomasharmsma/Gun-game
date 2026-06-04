@@ -13,7 +13,7 @@ export class Game extends Phaser.Scene {
         this.nextDirection = 'right';
         this.direction2 = 'left';
         this.nextDirection2 = 'left';
-        this.gridSize = 16;
+        this.gridSize = 64;
         this.snakeSpeed = 1;
         this.lastMoveTime = 0;
         this.isGameOver = false;
@@ -26,7 +26,6 @@ export class Game extends Phaser.Scene {
         this.direction = 'right';
         this.nextDirection = 'right';
         this.cameras.main.setBackgroundColor(0x00ff00);
-        this.add.image(512, 384, 'background').setAlpha(0.5);
 
         // Initialize snake
         this.snake = [];
@@ -45,7 +44,6 @@ export class Game extends Phaser.Scene {
             this.snake.push(segment);
         }
 
-        // Initialize second snake
         this.snake2 = [];
         const startX2 = 25;
         const startY2 = 20;
@@ -115,7 +113,6 @@ export class Game extends Phaser.Scene {
             this.player.currentSide = currentSide;
 
             if (currentSide !== this.lastSide) {
-                console.log(`Mouse moved to the ${currentSide} side`);
                 this.lastSide = currentSide;
 
                 if (currentSide === "left")
@@ -250,22 +247,9 @@ export class Game extends Phaser.Scene {
                 break;
         }
 
-        // Check for food collision
-        const eating = newX === this.food.x && newY === this.food.y;
-
         // Move snake
         const newHead = this.add.rectangle(newX, newY, this.gridSize - 2, this.gridSize - 2, 0x000000);
         this.snake.unshift(newHead);
-
-        if (!eating) {
-            // Remove tail if not eating
-            // const tail = this.snake.pop();
-            // tail.destroy();
-        } else {
-            // Spawn new food if eating
-            this.food.destroy();
-            this.spawnFood();
-        }
     }
 
     moveSnake2() {
