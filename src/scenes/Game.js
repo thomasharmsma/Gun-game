@@ -29,24 +29,22 @@ export class Game extends Phaser.Scene {
 
         // Initialize snake
         this.snake = [];
-        const startX = 25;
-        const startY = 20;
+        const startX = 0;
+        const startY = 0;
 
         // Create initial snake body (1 segment)
         for (let i = 0; i < 1; i++) {
-            const segment = this.add.rectangle(
-                (startX - i) * this.gridSize,
+            const segment = this.add.image(
+                (startX + i) * this.gridSize,
                 startY * this.gridSize,
-                this.gridSize - 2,
-                this.gridSize - 2,
-                0x000000
+                'desertfloor'
             );
             this.snake.push(segment);
         }
 
         this.snake2 = [];
-        const startX2 = 25;
-        const startY2 = 20;
+        const startX2 = 0;
+        const startY2 = 0;
         for (let i = 0; i < 1; i++) {
             const segment2 = this.add.rectangle(
                 (startX2 + i) * this.gridSize,
@@ -248,7 +246,7 @@ export class Game extends Phaser.Scene {
         }
 
         // Move snake
-        const newHead = this.add.rectangle(newX, newY, this.gridSize - 2, this.gridSize - 2, 0x000000);
+        const newHead = this.add.image(newX, newY, 'desertfloor');
         this.snake.unshift(newHead);
     }
 
@@ -274,7 +272,7 @@ export class Game extends Phaser.Scene {
                 break;
         }
 
-        const newHead = this.add.rectangle(newX, newY, this.gridSize - 2, this.gridSize - 2, 0xff0000);
+        const newHead = this.add.image(newX, newY, 'desertfloor');
         this.snake2.unshift(newHead);
     }
 }
