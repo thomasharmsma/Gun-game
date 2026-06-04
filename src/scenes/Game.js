@@ -46,12 +46,10 @@ export class Game extends Phaser.Scene {
         const startX2 = 0;
         const startY2 = 0;
         for (let i = 0; i < 1; i++) {
-            const segment2 = this.add.rectangle(
-                (startX2 + i) * this.gridSize,
-                startY2 * this.gridSize,
-                this.gridSize - 2,
-                this.gridSize - 2,
-                0xff0000
+            const segment2 = this.add.image(
+                (startX + i) * this.gridSize,
+                startY * this.gridSize,
+                'desertfloor'
             );
             this.snake2.push(segment2);
         }
