@@ -8,8 +8,22 @@ export class Game extends Phaser.Scene {
 
     create() {
 
+        // dynamic camera
+        class Camera {
+            constructor(scene) {
+                this.scene = scene;
+                this.camera = scene.cameras.main;
+                this.camera.setBounds(0, 0, 2000, 2000);
+            }
+        
+            follow(target) {
+                this.camera.startFollow(target);
+            }
+        }
+
+
         this.player = new Player(this, this.scale.width / 2, this.scale.height / 2);
-        this.cameras.main.startFollow(this.player);
+        this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
         this.player.currentSide = 'right';
         this.lastSide = null;
         this.crosshair = this.add.image(this.scale.width / 2, this.scale.height / 2, 'crosshair')
@@ -77,9 +91,17 @@ export class Game extends Phaser.Scene {
 
     update() 
     {
+
+        const cam = this.cameras.main;
+        const pointer = this.input.activePointer;
+
+        const offsetX = Phaser.Math.Clamp((this.scale.width / 2 - pointer.x) * 0.2, -120, 120);
+        const offsetY = Phaser.Math.Clamp((this.scale.height / 2 - pointer.y) * 0.2, -80, 80);
+
+        cam.followOffset.set(offsetX, offsetY);
+
         this.player.update(this.keys);
         
-        const pointer = this.input.activePointer;
         this.crosshair.x = pointer.x;
         this.crosshair.y = pointer.y;
 
