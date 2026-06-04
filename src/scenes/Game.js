@@ -1,4 +1,4 @@
-import { Player } from '../gameObjects/Player.js';
+import { Player } from '../gameObjects/player.js';
 import { Gun, Bullet } from '../gameObjects/guns.js';
 document.body.style.cursor = 'none';
 export class Game extends Phaser.Scene {
@@ -74,8 +74,22 @@ export class Game extends Phaser.Scene {
             loop: true
         });
 
+        // dynamic camera
+        class Camera {
+            constructor(scene) {
+                this.scene = scene;
+                this.camera = scene.cameras.main;
+                this.camera.setBounds(0, 0, 2000, 2000);
+            }
+        
+            follow(target) {
+                this.camera.startFollow(target);
+            }
+        }
+
+
         this.player = new Player(this, this.scale.width / 2, this.scale.height / 2);
-        this.cameras.main.startFollow(this.player);
+        this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
         this.player.currentSide = 'right';
         this.lastSide = null;
         this.crosshair = this.add.image(this.scale.width / 2, this.scale.height / 2, 'crosshair')
@@ -91,6 +105,9 @@ export class Game extends Phaser.Scene {
             maxSize: 20,
             runChildUpdate: true
         });
+
+        this.shotCooldown = 180;
+        this.lastShotAt = 0;
 
         this.input.on('pointermove', (pointer) => {
             const currentSide = pointer.worldX < this.player.x ? "left" : "right";
@@ -121,11 +138,17 @@ export class Game extends Phaser.Scene {
                 return;
             }
 
+            const now = this.time.now;
+            if (now - this.lastShotAt < this.shotCooldown) {
+                return;
+            }
+
             const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
             const bullet = this.bullets.get();
 
             if (bullet) {
                 bullet.fire(this.gun.x, this.gun.y, worldPoint.x, worldPoint.y);
+                this.lastShotAt = now;
             }
         });
 
@@ -148,9 +171,16 @@ export class Game extends Phaser.Scene {
             this.lastMoveTime = time;
         }
 
+        const cam = this.cameras.main;
+        const pointer = this.input.activePointer;
+
+        const offsetX = Phaser.Math.Clamp((this.scale.width / 2 - pointer.x) * 0.2, -120, 120);
+        const offsetY = Phaser.Math.Clamp((this.scale.height / 2 - pointer.y) * 0.2, -80, 80);
+
+        cam.followOffset.set(offsetX, offsetY);
+
         this.player.update(this.keys);
         
-        const pointer = this.input.activePointer;
         this.crosshair.x = pointer.x;
         this.crosshair.y = pointer.y;
 
