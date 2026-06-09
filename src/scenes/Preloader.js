@@ -22,10 +22,6 @@ export class Preloader extends Phaser.Scene {
     preload() {
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets/');
-        this.load.spritesheet('Horror-Walking-Sprites', 'Horror-Walking-Sprites.png', { frameWidth: 183, frameHeight: 175 });
-        this.load.spritesheet('Horror-Idle-Sprites', 'Horror-Idle-Sprites.png', { frameWidth: 183, frameHeight: 173 });
-        this.load.image('revolver', 'revolver.png');
-        this.load.image('crosshair', 'crosshair.png');
         this.load.spritesheet('bullet', 'bullet.png', { frameWidth: 132, frameHeight: 128 });
         this.load.image('play', 'play.png');
         this.load.image('sand', 'sand.png');
@@ -34,6 +30,10 @@ export class Preloader extends Phaser.Scene {
         this.load.image('wall1', 'Wall1.png');
         this.load.image('wall2', 'Wall2.png');
         this.load.image('desertfloor', 'desertfloor.png');
+        this.load.spritesheet('Horror-Walking-Sprites', 'Horror-Walking-Sprites.png', { frameWidth: 183, frameHeight: 175 });
+        this.load.spritesheet('Horror-Idle-Sprites', 'Horror-Idle-Sprites.png', { frameWidth: 183, frameHeight: 173 });
+        this.load.image('revolver', 'revolver.png');
+        this.load.image('crosshair', 'crosshair.png');
 
     }
 
