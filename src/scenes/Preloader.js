@@ -34,6 +34,10 @@ export class Preloader extends Phaser.Scene {
         this.load.spritesheet('Horror-Idle-Sprites', 'Horror-Idle-Sprites.png', { frameWidth: 183, frameHeight: 173 });
         this.load.image('revolver', 'revolver.png');
         this.load.image('crosshair', 'crosshair.png');
+        this.load.image('pause', 'Paused.png');
+        this.load.image('retryButton', 'Retry.png');
+        this.load.image('quitButton', 'Quit.png');
+        this.load.image('continueButton', 'Continue.png');
 
     }
 
