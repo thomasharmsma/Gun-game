@@ -25,7 +25,8 @@ export class Game extends Phaser.Scene {
         this.snakesMoving = true;
         this.direction = 'right';
         this.nextDirection = 'right';
-        this.cameras.main.setBackgroundColor(0x00ff00);
+        this.cameras.main.setBackgroundColor(0xa98e67);
+
 
         const spawnX = this.scale.width / 2;
         const spawnY = this.scale.height / 2;
@@ -83,6 +84,13 @@ export class Game extends Phaser.Scene {
         this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
         this.player.currentSide = 'right';
         this.lastSide = null;
+
+        this.obstacle = this.add.rectangle(spawnX + 200, spawnY, 150, 100, 0x0000ff);
+        this.physics.add.existing(this.obstacle, true);
+        this.obstacle.body.setSize(150, 100);
+        this.obstacle.setDepth(1);
+        this.physics.add.collider(this.player, this.obstacle);
+
         this.crosshair = this.add.image(this.scale.width / 2, this.scale.height / 2, 'crosshair')
             .setDepth(11)
             .setScrollFactor(0);
