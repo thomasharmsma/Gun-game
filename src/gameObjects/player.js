@@ -7,7 +7,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        // this.setCollideWorldBounds(true);
+        const hitboxWidth = 60;
+        const hitboxHeight = 20;
+
+        this.body.setSize(hitboxWidth, hitboxHeight);
+        this.body.setOffset(
+            Math.round((this.width - hitboxWidth) / 2),
+            Math.round((this.height - hitboxHeight) / 2)
+        );
+
         this.currentSide = 'right';
         this.playerVelocity = 200;
         this.initAnimations();

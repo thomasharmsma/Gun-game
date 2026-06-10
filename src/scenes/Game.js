@@ -65,7 +65,6 @@ export class Game extends Phaser.Scene {
             loop: true
         });
 
-        // dynamic camera
         class Camera {
             constructor(scene) {
                 this.scene = scene;
@@ -87,7 +86,7 @@ export class Game extends Phaser.Scene {
 
         this.obstacle = this.add.rectangle(spawnX + 200, spawnY, 150, 100, 0x0000ff);
         this.physics.add.existing(this.obstacle, true);
-        this.obstacle.body.setSize(150, 100);
+        this.obstacle.body.setSize(150, 150);
         this.obstacle.setDepth(1);
         this.physics.add.collider(this.player, this.obstacle);
 
@@ -352,6 +351,7 @@ export class Game extends Phaser.Scene {
 
         // Move snake
         const newHead = this.add.image(newX, newY, 'desertfloor').setDepth(0);
+        
         this.snake.unshift(newHead);
     }
 
