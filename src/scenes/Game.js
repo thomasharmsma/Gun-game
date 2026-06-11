@@ -156,7 +156,7 @@ export class Game extends Phaser.Scene {
             const bullet = this.bullets.get();
 
             if (bullet) {
-                bullet.fire(this.gun.x, this.gun.y, worldPoint.x, worldPoint.y);
+                bullet.fire(this.player.x, this.player.y, worldPoint.x, worldPoint.y);
                 this.lastShotAt = now;
             }
         });
@@ -278,7 +278,7 @@ export class Game extends Phaser.Scene {
             this.wallTiles.delete(tileKey);
         }
 
-        const floorTile = this.add.image(x, y, 'desertfloor').setDepth(0);
+        const floorTile = this.add.image(x, y, 'desertfloor').setDepth(-2);
 
         if (!this.floorTiles.has(tileKey)) {
             this.floorTiles.add(tileKey);
