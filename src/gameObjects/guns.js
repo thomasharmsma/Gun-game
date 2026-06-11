@@ -55,6 +55,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
         });
     }
 
+
     preUpdate(time, delta) {
         super.preUpdate(time, delta);
 
