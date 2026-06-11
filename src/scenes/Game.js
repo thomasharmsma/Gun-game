@@ -267,7 +267,6 @@ export class Game extends Phaser.Scene {
             this.snakesMoving = false;
         }
 
-        // Move snake at fixed intervals
         if (this.snakesMoving && time >= this.lastMoveTime + this.snakeSpeed) {
             this.moveSnake();
             this.moveSnake2();
@@ -326,10 +325,10 @@ export class Game extends Phaser.Scene {
     }
 
     moveSnake() {
-        // Update current direction
+        
         this.direction = this.nextDirection;
 
-        // Calculate new head position
+        
         const head = this.snake[0];
         let newX = head.x;
         let newY = head.y;
@@ -348,8 +347,6 @@ export class Game extends Phaser.Scene {
                 newY += this.gridSize;
                 break;
         }
-
-        // Move snake
         const newHead = this.add.image(newX, newY, 'desertfloor').setDepth(0);
         
         this.snake.unshift(newHead);
