@@ -83,6 +83,12 @@ export class Game extends Phaser.Scene {
         this.player.currentSide = 'right';
         this.lastSide = null;
 
+        this.hitboxesVisible = false;
+        this.wallHitboxGraphics = this.add.graphics();
+        this.wallHitboxGraphics.setDepth(20);
+        this.wallHitboxGraphics.lineStyle(2, 0x00ff00, 1);
+        this.wallHitboxGraphics.clear();
+
         this.wallTiles.forEach((wall) => {
             this.physics.add.collider(this.player, wall);
         });
@@ -157,6 +163,14 @@ export class Game extends Phaser.Scene {
 
         this.keys = this.input.keyboard.addKeys('W,A,S,D');
         this.gamePaused = false;
+
+        this.input.keyboard.on('keydown-H', () => {
+            this.hitboxesVisible = !this.hitboxesVisible;
+            if (!this.hitboxesVisible) {
+                this.wallHitboxGraphics.clear();
+                this.player.hitboxGraphics.clear();
+            }
+        });
 
         this.input.keyboard.on('keydown-ESC', () => {
             this.togglePause(!this.gamePaused);
@@ -304,6 +318,24 @@ export class Game extends Phaser.Scene {
         });
     }
 
+    drawWallHitboxes() {
+        if (!this.wallHitboxGraphics) {
+            return;
+        }
+
+        this.wallHitboxGraphics.clear();
+        this.wallHitboxGraphics.lineStyle(2, 0x00ff00, 1);
+
+        this.wallTiles.forEach((wall) => {
+            if (!wall.body) {
+                return;
+            }
+
+            const body = wall.body;
+            this.wallHitboxGraphics.strokeRect(body.x, body.y, body.width, body.height);
+        });
+    }
+
     update(time) 
     {
         const pointer = this.input.activePointer;
@@ -330,7 +362,12 @@ export class Game extends Phaser.Scene {
 
         cam.followOffset.set(offsetX, offsetY);
 
-        this.player.update(this.keys);
+        this.player.update(this.keys, this.hitboxesVisible);
+        if (this.hitboxesVisible) {
+            this.drawWallHitboxes();
+        } else {
+            this.wallHitboxGraphics.clear();
+        }
 
         const crosshairWorld = this.cameras.main.getWorldPoint(this.crosshair.x, this.crosshair.y);
         const aimAngle = Phaser.Math.Angle.Between(this.player.x, this.player.y, crosshairWorld.x, crosshairWorld.y);

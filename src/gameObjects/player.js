@@ -16,12 +16,27 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             Math.round((this.height - hitboxHeight) / 2)
         );
 
+        this.hitboxGraphics = scene.add.graphics();
+        this.hitboxGraphics.setDepth(20);
+        this.hitboxGraphics.lineStyle(2, 0xff0000, 1);
+        this.hitboxVisible = false;
+
         this.currentSide = 'right';
         this.playerVelocity = 250;
         this.initAnimations();
     }
 
+    drawHitbox()
+    {
+        const body = this.body;
+        if (!body) {
+            return;
+        }
 
+        this.hitboxGraphics.clear();
+        this.hitboxGraphics.lineStyle(2, 0xff0000, 1);
+        this.hitboxGraphics.strokeRect(body.x, body.y, body.width, body.height);
+    }
 
     initAnimations ()
     {
@@ -71,8 +86,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         });
     }
 
-    update(keys)
+    update(keys, hitboxVisible = false)
     {
+        this.hitboxVisible = hitboxVisible;
         let isMoving = false;
 
         if (keys.A.isDown) {
@@ -103,8 +119,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         }
 
         this.flipX = (this.currentSide === 'left');
-    }
 
+        if (this.hitboxVisible) {
+            this.drawHitbox();
+        } else {
+            this.hitboxGraphics.clear();
+        }
+    }
 
 
     idle ()
