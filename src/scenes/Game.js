@@ -8,6 +8,8 @@ export class Game extends Phaser.Scene {
         // map generation
         this.snake = [];
         this.snake2 = [];
+        this.floorTiles = new Set();
+        this.wallTiles = new Map();
         this.food = {};
         this.direction = 'right';
         this.nextDirection = 'right';
@@ -27,27 +29,24 @@ export class Game extends Phaser.Scene {
         this.nextDirection = 'right';
         this.cameras.main.setBackgroundColor(0xa98e67);
 
-
         const spawnX = this.scale.width / 2;
         const spawnY = this.scale.height / 2;
 
         this.snake = [];
         for (let i = 0; i < 1; i++) {
-            const segment = this.add.image(
+            const segment = this.addFloorTile(
                 spawnX + i * this.gridSize,
-                spawnY,
-                'desertfloor'
-            ).setDepth(0);
+                spawnY
+            );
             this.snake.push(segment);
         }
 
         this.snake2 = [];
         for (let i = 0; i < 1; i++) {
-            const segment2 = this.add.image(
+            const segment2 = this.addFloorTile(
                 spawnX + i * this.gridSize,
-                spawnY,
-                'desertfloor'
-            ).setDepth(0);
+                spawnY + this.gridSize
+            );
             this.snake2.push(segment2);
         }
 
@@ -84,11 +83,9 @@ export class Game extends Phaser.Scene {
         this.player.currentSide = 'right';
         this.lastSide = null;
 
-        this.wall = this.add.rectangle(spawnX + 200, spawnY, 64, 64, 0x0000ff);
-        this.physics.add.existing(this.wall, true);
-        this.wall.body.setSize(64, 64);
-        this.wall.setDepth(1);
-        this.physics.add.collider(this.player, this.wall);
+        this.wallTiles.forEach((wall) => {
+            this.physics.add.collider(this.player, wall);
+        });
 
         this.crosshair = this.add.image(this.scale.width / 2, this.scale.height / 2, 'crosshair')
             .setDepth(11)
@@ -254,6 +251,59 @@ export class Game extends Phaser.Scene {
         this.pauseMenuObjects = [overlay, title, quit, retry, cont];
     }
 
+    getTileKey(x, y) {
+        return `${x},${y}`;
+    }
+
+    addFloorTile(x, y) {
+        const tileKey = this.getTileKey(x, y);
+        const existingWall = this.wallTiles.get(tileKey);
+
+        if (existingWall) {
+            existingWall.destroy();
+            this.wallTiles.delete(tileKey);
+        }
+
+        const floorTile = this.add.image(x, y, 'desertfloor').setDepth(0);
+
+        if (!this.floorTiles.has(tileKey)) {
+            this.floorTiles.add(tileKey);
+            this.addBorderWalls(x, y);
+        }
+
+        return floorTile;
+    }
+
+    addBorderWalls(x, y) {
+
+        
+        const borderOffsets = [
+            [-this.gridSize, 0],
+            [this.gridSize, 0],
+            [0, -this.gridSize],
+            [0, this.gridSize]
+        ];
+
+        borderOffsets.forEach(([offsetX, offsetY]) => {
+            const wallX = x + offsetX;
+            const wallY = y + offsetY;
+            const wallKey = this.getTileKey(wallX, wallY);
+
+            if (this.floorTiles.has(wallKey) || this.wallTiles.has(wallKey)) {
+                return;
+            }
+
+            const wall = this.add.image(wallX, wallY, 'wall1').setDepth(1);
+            this.physics.add.existing(wall, true);
+            wall.body.setSize(this.gridSize, this.gridSize);
+            this.wallTiles.set(wallKey, wall); 
+
+            if (this.player) {
+                this.physics.add.collider(this.player, wall);
+            }
+        });
+    }
+
     update(time) 
     {
         const pointer = this.input.activePointer;
@@ -347,7 +397,7 @@ export class Game extends Phaser.Scene {
                 newY += this.gridSize;
                 break;
         }
-        const newHead = this.add.image(newX, newY, 'desertfloor').setDepth(0);
+        const newHead = this.addFloorTile(newX, newY);
         
         this.snake.unshift(newHead);
     }
@@ -374,7 +424,7 @@ export class Game extends Phaser.Scene {
                 break;
         }
 
-        const newHead = this.add.image(newX, newY, 'desertfloor').setDepth(0);
+        const newHead = this.addFloorTile(newX, newY);
         this.snake2.unshift(newHead);
     }
 }
