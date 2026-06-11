@@ -28,6 +28,8 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.body.setOffset(
             Math.round((this.width - hitboxRadius * 2) / 2),
             Math.round((this.height - hitboxRadius * 2) / 2 + 10)
+
+        
         );
     }
 
