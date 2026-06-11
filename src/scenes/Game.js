@@ -84,11 +84,11 @@ export class Game extends Phaser.Scene {
         this.player.currentSide = 'right';
         this.lastSide = null;
 
-        this.obstacle = this.add.rectangle(spawnX + 200, spawnY, 150, 100, 0x0000ff);
-        this.physics.add.existing(this.obstacle, true);
-        this.obstacle.body.setSize(150, 150);
-        this.obstacle.setDepth(1);
-        this.physics.add.collider(this.player, this.obstacle);
+        this.wall = this.add.rectangle(spawnX + 200, spawnY, 64, 64, 0x0000ff);
+        this.physics.add.existing(this.wall, true);
+        this.wall.body.setSize(64, 64);
+        this.wall.setDepth(1);
+        this.physics.add.collider(this.player, this.wall);
 
         this.crosshair = this.add.image(this.scale.width / 2, this.scale.height / 2, 'crosshair')
             .setDepth(11)

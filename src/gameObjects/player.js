@@ -7,8 +7,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        const hitboxWidth = 60;
-        const hitboxHeight = 20;
+        const hitboxWidth = 45;
+        const hitboxHeight = 45;
 
         this.body.setSize(hitboxWidth, hitboxHeight);
         this.body.setOffset(
@@ -17,7 +17,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         );
 
         this.currentSide = 'right';
-        this.playerVelocity = 200;
+        this.playerVelocity = 250;
         this.initAnimations();
     }
 
