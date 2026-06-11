@@ -108,6 +108,8 @@ export class Game extends Phaser.Scene {
             runChildUpdate: true
         });
 
+        this.setupBulletWallColliders();
+
         this.shotCooldown = 180;
         this.lastShotAt = 0;
 
@@ -315,6 +317,10 @@ export class Game extends Phaser.Scene {
             if (this.player) {
                 this.physics.add.collider(this.player, wall);
             }
+
+            if (this.bullets) {
+                this.physics.add.collider(wall, this.bullets, this.handleBulletWallCollision, undefined, this);
+            }
         });
     }
 
@@ -334,6 +340,22 @@ export class Game extends Phaser.Scene {
             const body = wall.body;
             this.wallHitboxGraphics.strokeRect(body.x, body.y, body.width, body.height);
         });
+    }
+
+    setupBulletWallColliders() {
+        if (!this.bullets) {
+            return;
+        }
+
+        this.wallTiles.forEach((wall) => {
+            this.physics.add.collider(wall, this.bullets, this.handleBulletWallCollision, undefined, this);
+        });
+    }
+
+    handleBulletWallCollision(wall, bullet) {
+        if (bullet && typeof bullet.deactivate === 'function') {
+            bullet.deactivate();
+        }
     }
 
     update(time) 

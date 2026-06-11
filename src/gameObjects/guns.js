@@ -15,6 +15,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        const hitboxRadius = 22;
 
         this.setActive(false);
         this.setVisible(false);
@@ -22,9 +23,16 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.speed = 1800;
         this.maxLifespan = 2000;
         this.firedAt = 0;
+
+        this.body.setCircle(hitboxRadius);
+        this.body.setOffset(
+            Math.round((this.width - hitboxRadius * 2) / 2),
+            Math.round((this.height - hitboxRadius * 2) / 2 + 10)
+        );
     }
 
     fire(x, y, targetX, targetY) {
+        this.body.enable = true;
         this.body.reset(x, y);
         this.setActive(true);
         this.setVisible(true);
@@ -60,9 +68,14 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
         if (time - this.firedAt > this.maxLifespan ||
             this.x < bounds.x - margin || this.x > bounds.right + margin ||
             this.y < bounds.y - margin || this.y > bounds.bottom + margin) {
-            this.setActive(false);
-            this.setVisible(false);
-            this.body.stop();
+            this.deactivate();
         }
+    }
+
+    deactivate() {
+        this.setActive(false);
+        this.setVisible(false);
+        this.body.stop();
+        this.body.enable = false;
     }
 }    
