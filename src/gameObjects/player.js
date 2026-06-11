@@ -7,13 +7,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        const hitboxWidth = 45;
-        const hitboxHeight = 45;
+        const hitboxRadius = 22;
 
-        this.body.setSize(hitboxWidth, hitboxHeight);
+        this.body.setCircle(hitboxRadius);
         this.body.setOffset(
-            Math.round((this.width - hitboxWidth) / 2),
-            Math.round((this.height - hitboxHeight) / 2)
+            Math.round((this.width - hitboxRadius * 2) / 2),
+            Math.round((this.height - hitboxRadius * 2) / 2 + 10)
         );
 
         this.hitboxGraphics = scene.add.graphics();
@@ -33,9 +32,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             return;
         }
 
+        const radius = body.radius || (body.width / 2);
+        const centerX = body.x + radius;
+        const centerY = body.y + radius;
+
         this.hitboxGraphics.clear();
         this.hitboxGraphics.lineStyle(2, 0xff0000, 1);
-        this.hitboxGraphics.strokeRect(body.x, body.y, body.width, body.height);
+        this.hitboxGraphics.strokeCircle(centerX, centerY, radius);
     }
 
     initAnimations ()
