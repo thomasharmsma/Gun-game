@@ -298,7 +298,11 @@ export class Game extends Phaser.Scene {
             [-this.gridSize, 0],
             [this.gridSize, 0],
             [0, -this.gridSize],
-            [0, this.gridSize]
+            [0, this.gridSize],
+            [-this.gridSize, -64],
+            [this.gridSize, 64],
+            [64, -this.gridSize],
+            [-64, this.gridSize]
         ];
 
         borderOffsets.forEach(([offsetX, offsetY]) => {
@@ -393,7 +397,7 @@ export class Game extends Phaser.Scene {
         if (this.isGameOver || this.gamePaused) return;
 
         const totalTilesCovered = this.snake.length + this.snake2.length;
-        if (totalTilesCovered >= 200) {
+        if (totalTilesCovered >= 5000) {
             this.snakesMoving = false;
         }
 

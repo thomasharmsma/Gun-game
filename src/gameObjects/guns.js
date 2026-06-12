@@ -15,7 +15,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        const hitboxRadius = 4;
+        const hitboxRadius = 6;
 
         this.setActive(false);
         this.setVisible(false);
