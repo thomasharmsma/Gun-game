@@ -10,16 +10,9 @@ export class Game extends Phaser.Scene {
         this.snake2 = [];
         this.floorTiles = new Set();
         this.wallTiles = new Map();
-        this.food = {};
-        this.direction = 'right';
-        this.nextDirection = 'right';
-        this.direction2 = 'left';
-        this.nextDirection2 = 'left';
         this.gridSize = 64;
         this.snakeSpeed = 1;
         this.lastMoveTime = 0;
-        this.isGameOver = false;
-        this.snakesMoving = true;
     }
 
     create() {
@@ -27,6 +20,8 @@ export class Game extends Phaser.Scene {
         this.snakesMoving = true;
         this.direction = 'right';
         this.nextDirection = 'right';
+        this.direction2 = 'left';
+        this.nextDirection2 = 'left';
         this.cameras.main.setBackgroundColor(0xa98e67);
 
         const spawnX = this.scale.width / 2;
@@ -88,6 +83,11 @@ export class Game extends Phaser.Scene {
         this.wallHitboxGraphics.setDepth(20);
         this.wallHitboxGraphics.lineStyle(2, 0x00ff00, 1);
         this.wallHitboxGraphics.clear();
+
+        this.bulletHitboxGraphics = this.add.graphics();
+        this.bulletHitboxGraphics.setDepth(20);
+        this.bulletHitboxGraphics.lineStyle(2, 0x0000ff, 1);
+        this.bulletHitboxGraphics.clear();
 
         this.wallTiles.forEach((wall) => {
             this.physics.add.collider(this.player, wall);
@@ -170,6 +170,7 @@ export class Game extends Phaser.Scene {
             this.hitboxesVisible = !this.hitboxesVisible;
             if (!this.hitboxesVisible) {
                 this.wallHitboxGraphics.clear();
+                this.bulletHitboxGraphics.clear();
                 this.player.hitboxGraphics.clear();
             }
         });
@@ -342,6 +343,31 @@ export class Game extends Phaser.Scene {
         });
     }
 
+    drawBulletHitboxes() {
+        if (!this.bulletHitboxGraphics || !this.bullets) {
+            return;
+        }
+
+        this.bulletHitboxGraphics.clear();
+        this.bulletHitboxGraphics.lineStyle(2, 0x0000ff, 1);
+
+        this.bullets.getChildren().forEach((bullet) => {
+            if (!bullet.active || !bullet.body) {
+                return;
+            }
+
+            const body = bullet.body;
+            if (body.circle) {
+                const radius = body.radius || Math.max(body.width, body.height) / 2;
+                const centerX = body.x + radius;
+                const centerY = body.y + radius;
+                this.bulletHitboxGraphics.strokeCircle(centerX, centerY, radius);
+            } else {
+                this.bulletHitboxGraphics.strokeRect(body.x, body.y, body.width, body.height);
+            }
+        });
+    }
+
     setupBulletWallColliders() {
         if (!this.bullets) {
             return;
@@ -387,8 +413,10 @@ export class Game extends Phaser.Scene {
         this.player.update(this.keys, this.hitboxesVisible);
         if (this.hitboxesVisible) {
             this.drawWallHitboxes();
+            this.drawBulletHitboxes();
         } else {
             this.wallHitboxGraphics.clear();
+            this.bulletHitboxGraphics.clear();
         }
 
         const crosshairWorld = this.cameras.main.getWorldPoint(this.crosshair.x, this.crosshair.y);

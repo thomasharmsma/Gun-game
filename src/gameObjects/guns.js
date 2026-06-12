@@ -15,21 +15,19 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        const hitboxRadius = 22;
+        const hitboxRadius = 4;
 
         this.setActive(false);
         this.setVisible(false);
         this.body.setAllowGravity(false);
-        this.speed = 1800;
-        this.maxLifespan = 2000;
+        this.speed = 1600;
+        this.maxLifespan = 3000;
         this.firedAt = 0;
 
         this.body.setCircle(hitboxRadius);
         this.body.setOffset(
             Math.round((this.width - hitboxRadius * 2) / 2),
-            Math.round((this.height - hitboxRadius * 2) / 2 + 10)
-
-        
+            Math.round((this.height - hitboxRadius * 2) / 2)
         );
     }
 
@@ -42,7 +40,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.setScale(0.5);
 
         const baseAngle = Phaser.Math.Angle.Between(x, y, targetX, targetY);
-        const spreadDegrees = 4;
+        const spreadDegrees = 3;
         const spreadRad = Phaser.Math.DegToRad(Phaser.Math.Between(-spreadDegrees, spreadDegrees));
         const angle = baseAngle + spreadRad;
         this.setRotation(angle);
