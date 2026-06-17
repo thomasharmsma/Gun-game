@@ -1,5 +1,6 @@
 import { Player } from '../gameObjects/player.js';
 import { Gun, Bullet } from '../gameObjects/guns.js';
+import { Enemy } from '../gameObjects/enemy.js';
 document.body.style.cursor = 'none';
 export class Game extends Phaser.Scene {
     constructor() {
@@ -73,6 +74,8 @@ export class Game extends Phaser.Scene {
 
 
         this.player = new Player(this, spawnX, spawnY);
+        this.Enemy = new Enemy(this, spawnX, spawnY);
+        this.Enemy.scale = 0.4;
         this.player.setDepth(2);
         this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
         this.player.currentSide = 'right';
@@ -397,7 +400,7 @@ export class Game extends Phaser.Scene {
         if (this.isGameOver || this.gamePaused) return;
 
         const totalTilesCovered = this.snake.length + this.snake2.length;
-        if (totalTilesCovered >= 5000) {
+        if (totalTilesCovered >= 300) {
             this.snakesMoving = false;
         }
 
