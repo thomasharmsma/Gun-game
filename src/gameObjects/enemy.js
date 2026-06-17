@@ -2,7 +2,7 @@ import { Gun, Bullet } from '../gameObjects/guns.js';
 export class Enemy extends Phaser.Physics.Arcade.Sprite
 {
     constructor(scene, x, y) {
-        super(scene, x, y, 'Bandit', 0);
+        super(scene, x, y, 'BanditIdle', 0);
         this.scene = scene;
 
         scene.add.existing(this);
@@ -11,6 +11,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
         this.setCollideWorldBounds(true);
         this.health = 3;
         this.InitAnimations();
+        this.play('BanditIdle', true);
         const hitboxRadius = 22;
     }
 
