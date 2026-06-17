@@ -34,7 +34,8 @@ export class Preloader extends Phaser.Scene {
         this.load.image('retryButton', 'Retry.png');
         this.load.image('quitButton', 'Quit.png');
         this.load.image('continueButton', 'Continue.png');
-
+        this.load.spritesheet('BanditWalk', 'Bandit_Walk.png', { frameWidth: 207, frameHeight: 201 });
+        this.load.spritesheet('BanditIdle', 'Bandit_Idle.png', { frameWidth: 247, frameHeight: 201 });
     }
 
     create() {
