@@ -77,6 +77,9 @@ export class Game extends Phaser.Scene {
         this.Enemy = new Enemy(this, spawnX, spawnY);
         this.Enemy.scale = 0.4;
         this.player.setDepth(2);
+        this.wallTiles.forEach((wall) => {
+            this.physics.add.collider(this.Enemy, wall);
+        });
         this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
         this.player.currentSide = 'right';
         this.lastSide = null;
@@ -326,6 +329,10 @@ export class Game extends Phaser.Scene {
                 this.physics.add.collider(this.player, wall);
             }
 
+            if (this.Enemy) {
+                this.physics.add.collider(this.Enemy, wall);
+            }
+
             if (this.bullets) {
                 this.physics.add.collider(wall, this.bullets, this.handleBulletWallCollision, undefined, this);
             }
@@ -418,6 +425,7 @@ export class Game extends Phaser.Scene {
         cam.followOffset.set(offsetX, offsetY);
 
         this.player.update(this.keys, this.hitboxesVisible);
+        this.Enemy.update();
         if (this.hitboxesVisible) {
             this.drawWallHitboxes();
             this.drawBulletHitboxes();
