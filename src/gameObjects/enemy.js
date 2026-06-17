@@ -20,7 +20,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
     {   this.anims.create({
             key: 'BanditIdle',
             frames: this.anims.generateFrameNumbers('BanditIdle', { start: 0, end: 3 }),
-            frameRate: 5,
+            frameRate: 7,
             repeat: -1
         });
 
