@@ -1,3 +1,4 @@
+import { Gun, Bullet } from '../gameObjects/guns.js';
 export class Enemy extends Phaser.Physics.Arcade.Sprite
 {
     constructor(scene, x, y) {
@@ -6,6 +7,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
+
+        this.physics.add.collider(this, this.scene.player);
+        this.physics.add.collider(this, this.Bullet);
 
         this.body.setSize(128, 128);
         this.body.setOffset(64, 64);
@@ -19,8 +23,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
         this.hitboxGraphics.lineStyle(2, 0xff00ff, 1);
         this.hitboxVisible = false;
         this.moveDuration = 500;
-        this.pauseMin = 10;
-        this.pauseMax = 10;
+        this.pauseMin = 1000;
+        this.pauseMax = 5000;
         this.moveTimer = 7000;
         this.pauseTimer = 0;
         this.isPaused = false;
