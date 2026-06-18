@@ -7,8 +7,6 @@ export class Game extends Phaser.Scene {
         super('Game');
 
         // map generation
-        this.snake = [];
-        this.snake2 = [];
         this.floorTiles = new Set();
         this.wallTiles = new Map();
         this.gridSize = 64;
