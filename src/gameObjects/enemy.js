@@ -7,16 +7,21 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        this.body.setSize(42, 78);
-        this.body.setOffset(28, 108);
+        this.body.setSize(128, 128);
+        this.body.setOffset(64, 64);
         this.body.setAllowGravity(false);
         this.health = 3;
         this.gridSize = scene.gridSize || 64;
-        this.moveSpeed = 65;
-        this.moveDuration = 900;
-        this.pauseMin = 4000;
-        this.pauseMax = 7000;
-        this.moveTimer = 0;
+        this.moveSpeed = 200;
+
+        this.hitboxGraphics = scene.add.graphics();
+        this.hitboxGraphics.setDepth(20);
+        this.hitboxGraphics.lineStyle(2, 0xff00ff, 1);
+        this.hitboxVisible = false;
+        this.moveDuration = 500;
+        this.pauseMin = 10;
+        this.pauseMax = 10;
+        this.moveTimer = 7000;
         this.pauseTimer = 0;
         this.isPaused = false;
         this.direction = 'left';
@@ -91,6 +96,17 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
         if (this.anims.currentAnim?.key !== 'BanditWalk') {
             this.play('BanditWalk', true);
         }
+    }
+
+    drawHitbox() {
+        const body = this.body;
+        if (!body) {
+            return;
+        }
+
+        this.hitboxGraphics.clear();
+        this.hitboxGraphics.lineStyle(2, 0xff00ff, 1);
+        this.hitboxGraphics.strokeRect(body.x, body.y, body.width, body.height);
     }
 
     startMoving() {

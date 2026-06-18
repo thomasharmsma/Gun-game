@@ -178,6 +178,9 @@ export class Game extends Phaser.Scene {
                 this.wallHitboxGraphics.clear();
                 this.bulletHitboxGraphics.clear();
                 this.player.hitboxGraphics.clear();
+                if (this.Enemy) {
+                    this.Enemy.hitboxGraphics.clear();
+                }
             }
         });
 
@@ -429,9 +432,15 @@ export class Game extends Phaser.Scene {
         if (this.hitboxesVisible) {
             this.drawWallHitboxes();
             this.drawBulletHitboxes();
+            if (this.Enemy) {
+                this.Enemy.drawHitbox();
+            }
         } else {
             this.wallHitboxGraphics.clear();
             this.bulletHitboxGraphics.clear();
+            if (this.Enemy) {
+                this.Enemy.hitboxGraphics.clear();
+            }
         }
 
         const crosshairWorld = this.cameras.main.getWorldPoint(this.crosshair.x, this.crosshair.y);
