@@ -306,10 +306,10 @@ export class Game extends Phaser.Scene {
             [this.gridSize, 0],
             [0, -this.gridSize],
             [0, this.gridSize],
-            [-this.gridSize, -64],
-            [this.gridSize, 64],
-            [64, -this.gridSize],
-            [-64, this.gridSize]
+            [-this.gridSize, -this.gridSize],
+            [this.gridSize, this.gridSize],
+            [this.gridSize, -this.gridSize],
+            [-this.gridSize, this.gridSize]
         ];
 
         borderOffsets.forEach(([offsetX, offsetY]) => {

@@ -8,9 +8,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        this.physics.add.collider(this, this.scene.player);
-        this.physics.add.collider(this, this.Bullet);
-
         this.body.setSize(128, 128);
         this.body.setOffset(64, 64);
         this.body.setAllowGravity(false);
