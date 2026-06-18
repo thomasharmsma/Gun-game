@@ -4,7 +4,7 @@ export class Gun extends Phaser.Physics.Arcade.Sprite
     {        
         super(scene, x, y, 'revolver', 0);
 
-        scene.add.existing(this);
+        scene.add.existing(this);   
         scene.physics.add.existing(this);
     }
 }
