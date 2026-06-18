@@ -113,6 +113,13 @@ export class Game extends Phaser.Scene {
         });
 
         this.setupBulletWallColliders();
+        this.physics.add.overlap(
+            this.bullets,
+            this.Enemy,
+            this.handleBulletEnemyCollision,
+            undefined,
+            this
+        );
 
         this.shotCooldown = 180;
         this.lastShotAt = 0;
@@ -176,9 +183,6 @@ export class Game extends Phaser.Scene {
                 this.wallHitboxGraphics.clear();
                 this.bulletHitboxGraphics.clear();
                 this.player.hitboxGraphics.clear();
-                if (this.Enemy) {
-                    this.Enemy.hitboxGraphics.clear();
-                }
             }
         });
 
@@ -394,8 +398,31 @@ export class Game extends Phaser.Scene {
     }
 
     handleBulletWallCollision(wall, bullet) {
-        if (bullet && typeof bullet.deactivate === 'function') {
-            bullet.deactivate();
+        const bulletObject = bullet?.gameObject || bullet;
+
+        if (bulletObject && typeof bulletObject.deactivate === 'function') {
+            bulletObject.deactivate();
+        }
+    }
+
+    handleBulletEnemyCollision(bullet, enemy) {
+        const bulletObject = bullet?.gameObject || bullet;
+        const enemyObject = enemy?.gameObject || enemy;
+
+        if (!bulletObject || !enemyObject) {
+            return;
+        }
+
+        if (!bulletObject.active || !enemyObject.active) {
+            return;
+        }
+
+        if (typeof bulletObject.deactivate === 'function') {
+            bulletObject.deactivate();
+        }
+
+        if (typeof enemyObject.takeDamage === 'function') {
+            enemyObject.takeDamage(1);
         }
     }
 
@@ -430,15 +457,9 @@ export class Game extends Phaser.Scene {
         if (this.hitboxesVisible) {
             this.drawWallHitboxes();
             this.drawBulletHitboxes();
-            if (this.Enemy) {
-                this.Enemy.drawHitbox();
-            }
         } else {
             this.wallHitboxGraphics.clear();
             this.bulletHitboxGraphics.clear();
-            if (this.Enemy) {
-                this.Enemy.hitboxGraphics.clear();
-            }
         }
 
         const crosshairWorld = this.cameras.main.getWorldPoint(this.crosshair.x, this.crosshair.y);
