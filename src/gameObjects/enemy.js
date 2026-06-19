@@ -35,10 +35,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
         this.startPause();
     }
 
-    takeDamage(amount = 1) {
-        this.health = Math.max(0, this.health - amount);
-    }
-
     InitAnimations() 
     {
         this.anims.create({
@@ -58,12 +54,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
 
     update() {
         const now = this.scene.time.now;
-
-        if (this.health <= 0) {
-            this.destroy();
-            this.hitboxGraphics.destroy();
-            return;
-        }
 
         if (this.isPaused) {
             if (now >= this.pauseTimer) {
