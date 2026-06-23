@@ -36,6 +36,7 @@ export class Preloader extends Phaser.Scene {
         this.load.image('continueButton', 'Continue.png');
         this.load.spritesheet('BanditWalk', 'Bandit_Walk.png', { frameWidth: 267, frameHeight: 256 });
         this.load.spritesheet('BanditIdle', 'Bandit_Idle.png', { frameWidth: 264, frameHeight: 256 });
+        this.load.image('bigger weapon', 'bigger_weapon.png');
     }
 
     create() {

@@ -50,6 +50,20 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
             frameRate: 10,
             repeat: -1
         });
+
+        this.anims.create({
+            key: 'BanditHurt',
+            frames: this.anims.generateFrameNumbers('BanditHurt', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: 0
+        });
+
+        this.anims.create({
+            key: 'BanditDeath',
+            frames: this.anims.generateFrameNumbers('BanditDeath', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: 0
+        });
     }
 
     update() {
