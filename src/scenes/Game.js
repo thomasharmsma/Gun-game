@@ -416,6 +416,8 @@ export class Game extends Phaser.Scene {
         }
     }
 
+    
+
     update(time) 
     {
         const pointer = this.input.activePointer;
