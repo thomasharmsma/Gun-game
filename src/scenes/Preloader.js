@@ -29,6 +29,7 @@ export class Preloader extends Phaser.Scene {
         this.load.spritesheet('Horror-Idle-Sprites', 'Horror-Idle-Sprites.png', { frameWidth: 183, frameHeight: 173 });
         this.load.image('revolver', 'revolver.png');
         this.load.spritesheet('bullet', 'bullet.png', { frameWidth: 132, frameHeight: 128 });
+        this.load.image('enemyBullet', 'i need more bullets.png');
         this.load.image('crosshair', 'crosshair.png');
         this.load.image('pause', 'Paused.png');
         this.load.image('retryButton', 'Retry.png');
@@ -36,7 +37,7 @@ export class Preloader extends Phaser.Scene {
         this.load.image('continueButton', 'Continue.png');
         this.load.spritesheet('BanditWalk', 'Bandit_Walk.png', { frameWidth: 267, frameHeight: 256 });
         this.load.spritesheet('BanditIdle', 'Bandit_Idle.png', { frameWidth: 264, frameHeight: 256 });
-        this.load.image('bigger weapon', 'bigger_weapon.png');
+        this.load.image('bigger weapon', 'bigger weapon.png');
     }
 
     create() {

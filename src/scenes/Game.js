@@ -1,5 +1,5 @@
 import { Player } from '../gameObjects/player.js';
-import { Gun, Bullet } from '../gameObjects/guns.js';
+import { Gun, Bullet, EnemyBullet } from '../gameObjects/guns.js';
 import { Enemy } from '../gameObjects/enemy.js';
 document.body.style.cursor = 'none';
 export class Game extends Phaser.Scene {
@@ -17,6 +17,7 @@ export class Game extends Phaser.Scene {
     create() {
         this.isGameOver = false;
         this.snakesMoving = true;
+        this.enemiesSpawned = false;
         this.direction = 'right';
         this.nextDirection = 'right';
         this.direction2 = 'left';
@@ -72,12 +73,8 @@ export class Game extends Phaser.Scene {
 
 
         this.player = new Player(this, spawnX, spawnY);
-        this.Enemy = new Enemy(this, spawnX, spawnY);
-        this.Enemy.scale = 0.4;
+        this.enemies = this.physics.add.group();
         this.player.setDepth(2);
-        this.wallTiles.forEach((wall) => {
-            this.physics.add.collider(this.Enemy, wall);
-        });
         this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
         this.player.currentSide = 'right';
         this.lastSide = null;
@@ -112,8 +109,17 @@ export class Game extends Phaser.Scene {
             runChildUpdate: true
         });
 
+        this.enemyBullets = this.physics.add.group({
+            classType: EnemyBullet,
+            maxSize: 50,
+            runChildUpdate: true
+        });
+        this.enemyShootRange = this.gridSize * 5;
+        this.enemyShotCooldown = 2000;
+
         this.setupBulletWallColliders();
-        this.physics.add.collider(this.Enemy, this.bullets, this.handleBulletEnemyCollision, undefined, this);
+        this.physics.add.collider(this.enemies, this.bullets, this.handleBulletEnemyCollision, undefined, this);
+        this.physics.add.overlap(this.player, this.enemyBullets, this.handleEnemyBulletPlayerCollision, undefined, this);
 
         this.shotCooldown = 180;
         this.lastShotAt = 0;
@@ -177,9 +183,7 @@ export class Game extends Phaser.Scene {
                 this.wallHitboxGraphics.clear();
                 this.bulletHitboxGraphics.clear();
                 this.player.hitboxGraphics.clear();
-                if (this.Enemy) {
-                    this.Enemy.hitboxGraphics.clear();
-                }
+                this.clearEnemyHitboxes();
             }
         });
 
@@ -331,12 +335,16 @@ export class Game extends Phaser.Scene {
                 this.physics.add.collider(this.player, wall);
             }
 
-            if (this.Enemy) {
-                this.physics.add.collider(this.Enemy, wall);
+            if (this.enemies) {
+                this.physics.add.collider(this.enemies, wall);
             }
 
             if (this.bullets) {
                 this.physics.add.collider(wall, this.bullets, this.handleBulletWallCollision, undefined, this);
+            }
+
+            if (this.enemyBullets) {
+                this.physics.add.collider(wall, this.enemyBullets, this.handleBulletWallCollision, undefined, this);
             }
         });
     }
@@ -367,7 +375,9 @@ export class Game extends Phaser.Scene {
         this.bulletHitboxGraphics.clear();
         this.bulletHitboxGraphics.lineStyle(2, 0x0000ff, 1);
 
-        this.bullets.getChildren().forEach((bullet) => {
+        const bulletGroups = [this.bullets, this.enemyBullets].filter(Boolean);
+
+        bulletGroups.forEach((bulletGroup) => bulletGroup.getChildren().forEach((bullet) => {
             if (!bullet.active || !bullet.body) {
                 return;
             }
@@ -381,7 +391,7 @@ export class Game extends Phaser.Scene {
             } else {
                 this.bulletHitboxGraphics.strokeRect(body.x, body.y, body.width, body.height);
             }
-        });
+        }));
     }
 
     setupBulletWallColliders() {
@@ -391,6 +401,58 @@ export class Game extends Phaser.Scene {
 
         this.wallTiles.forEach((wall) => {
             this.physics.add.collider(wall, this.bullets, this.handleBulletWallCollision, undefined, this);
+
+            if (this.enemyBullets) {
+                this.physics.add.collider(wall, this.enemyBullets, this.handleBulletWallCollision, undefined, this);
+            }
+        });
+    }
+
+    spawnEnemiesOnRandomFloorTiles(count = 10) {
+        if (!this.enemies) {
+            return;
+        }
+
+        const availableTiles = Array.from(this.floorTiles)
+            .map((tileKey) => {
+                const [x, y] = tileKey.split(',').map(Number);
+                return { x, y, tileKey };
+            })
+            .filter(({ x, y, tileKey }) => {
+                if (this.wallTiles.has(tileKey)) {
+                    return false;
+                }
+
+                if (!this.player) {
+                    return true;
+                }
+
+                return Phaser.Math.Distance.Between(this.player.x, this.player.y, x, y) > this.gridSize;
+            });
+
+        Phaser.Utils.Array.Shuffle(availableTiles)
+            .slice(0, count)
+            .forEach(({ x, y }) => {
+                const enemy = new Enemy(this, x, y);
+                enemy.setScale(0.4);
+                enemy.lastShotAt = this.time.now;
+                this.enemies.add(enemy);
+
+                this.wallTiles.forEach((wall) => {
+                    this.physics.add.collider(enemy, wall);
+                });
+            });
+    }
+
+    clearEnemyHitboxes() {
+        if (!this.enemies) {
+            return;
+        }
+
+        this.enemies.getChildren().forEach((enemy) => {
+            if (enemy.hitboxGraphics) {
+                enemy.hitboxGraphics.clear();
+            }
         });
     }
 
@@ -412,13 +474,45 @@ export class Game extends Phaser.Scene {
         enemy.health = (enemy.health || 1) - 1;
 
         if (enemy.health <= 0) {
+            if (enemy.weapon) {
+                enemy.weapon.setVisible(false);
+            }
             enemy.disableBody(true, true);
         }
     }
 
+    handleEnemyBulletPlayerCollision(player, bullet) {
+        if (bullet && typeof bullet.deactivate === 'function') {
+            bullet.deactivate();
+        }
+    }
+
+    updateEnemyShooting(enemy, time) {
+        if (!this.player || !this.enemyBullets) {
+            return;
+        }
+
+        const distanceToPlayer = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.x, this.player.y);
+        if (distanceToPlayer > this.enemyShootRange) {
+            return;
+        }
+
+        if (time - (enemy.lastShotAt || 0) < this.enemyShotCooldown) {
+            return;
+        }
+
+        const bullet = this.enemyBullets.get();
+        if (!bullet) {
+            return;
+        }
+
+        bullet.fire(enemy.x, enemy.y, this.player.x, this.player.y);
+        enemy.lastShotAt = time;
+    }
+
     
 
-    update(time) 
+    update(time)
     {
         const pointer = this.input.activePointer;
         this.crosshair.x = pointer.x;
@@ -429,6 +523,10 @@ export class Game extends Phaser.Scene {
         const totalTilesCovered = this.snake.length + this.snake2.length;
         if (totalTilesCovered >= 300) {
             this.snakesMoving = false;
+            if (!this.enemiesSpawned) {
+                this.enemiesSpawned = true;
+                this.spawnEnemiesOnRandomFloorTiles(10);
+            }
         }
 
         if (this.snakesMoving && time >= this.lastMoveTime + this.snakeSpeed) {
@@ -445,19 +543,20 @@ export class Game extends Phaser.Scene {
         cam.followOffset.set(offsetX, offsetY);
 
         this.player.update(this.keys, this.hitboxesVisible);
-        this.Enemy.update();
+        this.enemies.getChildren().forEach((enemy) => {
+            if (enemy.active) {
+                enemy.update();
+                this.updateEnemyShooting(enemy, time);
+            }
+        });
         if (this.hitboxesVisible) {
             this.drawWallHitboxes();
             this.drawBulletHitboxes();
-            if (this.Enemy) {
-                this.Enemy.drawHitbox();
-            }
+            this.enemies.getChildren().forEach((enemy) => enemy.drawHitbox());
         } else {
             this.wallHitboxGraphics.clear();
             this.bulletHitboxGraphics.clear();
-            if (this.Enemy) {
-                this.Enemy.hitboxGraphics.clear();
-            }
+            this.clearEnemyHitboxes();
         }
 
         const crosshairWorld = this.cameras.main.getWorldPoint(this.crosshair.x, this.crosshair.y);

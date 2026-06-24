@@ -1,4 +1,3 @@
-import { Gun, Bullet } from '../gameObjects/guns.js';
 export class Enemy extends Phaser.Physics.Arcade.Sprite
 {
     constructor(scene, x, y) {
@@ -29,14 +28,22 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
         this.targetX = x;
         this.targetY = y;
         this.isMovingToTarget = false;
+        this.weapon = scene.add.image(x, y, 'bigger weapon');
+        this.weapon.setScale(0.1);
+        this.weapon.setDepth(3);
 
         this.InitAnimations();
         this.play('BanditIdle', true);
+        this.updateWeaponSprite();
         this.startPause();
     }
 
     InitAnimations() 
     {
+        if (this.scene.anims.exists('BanditIdle')) {
+            return;
+        }
+
         this.anims.create({
             key: 'BanditIdle',
             frames: this.anims.generateFrameNumbers('BanditIdle', { start: 0, end: 3 }),
@@ -78,6 +85,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
                 if (this.anims.currentAnim?.key !== 'BanditIdle') {
                     this.play('BanditIdle', true);
                 }
+                this.updateWeaponSprite();
                 return;
             }
         }
@@ -92,6 +100,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
                 this.isMovingToTarget = false;
                 this.play('BanditIdle', true);
                 this.startPause();
+                this.updateWeaponSprite();
                 return;
             }
 
@@ -100,6 +109,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
             if (this.anims.currentAnim?.key !== 'BanditWalk') {
                 this.play('BanditWalk', true);
             }
+            this.updateWeaponSprite();
             return;
         }
 
@@ -111,6 +121,28 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
         if (this.anims.currentAnim?.key !== 'BanditWalk') {
             this.play('BanditWalk', true);
         }
+
+        this.updateWeaponSprite();
+    }
+
+    updateWeaponSprite() {
+        if (!this.weapon) {
+            return;
+        }
+
+        if (!this.active || !this.visible) {
+            this.weapon.setVisible(false);
+            return;
+        }
+
+        const facingLeft = this.flipX;
+        const offsetX = facingLeft ? -28 : 28;
+        const offsetY = 18;
+
+        this.weapon.setVisible(true);
+        this.weapon.setPosition(this.x + offsetX, this.y + offsetY);
+        this.weapon.setFlipX(facingLeft);
+        this.weapon.setDepth(this.depth + 1);
     }
 
     drawHitbox() {
@@ -193,5 +225,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite
         this.isPaused = true;
         this.pauseTimer = this.scene.time.now + Phaser.Math.Between(this.pauseMin, this.pauseMax);
         this.play('BanditIdle', true);
+        this.updateWeaponSprite();
     }
 }

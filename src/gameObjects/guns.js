@@ -80,3 +80,60 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.body.enable = false;
     }
 }    
+
+export class EnemyBullet extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y) {
+        super(scene, x, y, 'enemyBullet');
+
+        scene.add.existing(this);
+        scene.physics.add.existing(this);
+
+        const hitboxRadius = 8;
+
+        this.setActive(false);
+        this.setVisible(false);
+        this.body.setAllowGravity(false);
+        this.speed = 700;
+        this.maxLifespan = 3000;
+        this.firedAt = 0;
+
+        this.body.setCircle(hitboxRadius);
+        this.body.setOffset(
+            Math.round((this.width - hitboxRadius * 2) / 2),
+            Math.round((this.height - hitboxRadius * 2) / 2)
+        );
+    }
+
+    fire(x, y, targetX, targetY) {
+        this.body.enable = true;
+        this.body.reset(x, y);
+        this.setActive(true);
+        this.setVisible(true);
+        this.setScale(0.25);
+        this.setDepth(2);
+
+        const angle = Phaser.Math.Angle.Between(x, y, targetX, targetY);
+        this.setRotation(angle);
+        this.scene.physics.velocityFromRotation(angle, this.speed, this.body.velocity);
+        this.firedAt = this.scene.time.now;
+    }
+
+    preUpdate(time, delta) {
+        super.preUpdate(time, delta);
+
+        if (!this.active) {
+            return;
+        }
+
+        if (time - this.firedAt > this.maxLifespan) {
+            this.deactivate();
+        }
+    }
+
+    deactivate() {
+        this.setActive(false);
+        this.setVisible(false);
+        this.body.stop();
+        this.body.enable = false;
+    }
+}
